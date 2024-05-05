@@ -47,3 +47,28 @@ func (uh *UserHandler) Register(c echo.Context) error {
 		"message": "success add user",
 	})
 }
+
+func (uh *UserHandler) GetAll(c echo.Context) error {
+	result, err := uh.userService.GetAll()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error read data " + err.Error(),
+		})
+	}
+
+	var allUserResponse []UserResponse
+	for _, value := range result {
+		allUserResponse = append(allUserResponse, UserResponse{
+			ID:    value.ID,
+			Name:  value.Name,
+			Email: value.Email,
+		})
+	}
+
+	return c.JSON(http.StatusCreated, map[string]any{
+		"status":  "success",
+		"message": "success read data",
+		"results": allUserResponse,
+	})
+}
