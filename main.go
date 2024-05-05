@@ -3,6 +3,7 @@ package main
 import (
 	"myTaskApp/app/configs"
 	"myTaskApp/app/databases"
+	"myTaskApp/app/migrations"
 	"myTaskApp/app/routes"
 
 	"github.com/labstack/echo/v4"
@@ -16,7 +17,7 @@ func main() {
 	// create new instance echo
 	e := echo.New()
 
-	// migrations.InitialMigration()
+	migrations.InitialMigration()
 	routes.InitRouter(e, dbMySql)
 
 	// start server and port
