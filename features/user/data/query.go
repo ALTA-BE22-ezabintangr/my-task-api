@@ -38,13 +38,27 @@ func (u *userQuery) Insert(input user.Core) error {
 
 // SelectAll implements user.DataInterface.
 func (u *userQuery) SelectAll() ([]user.Core, error) {
-	panic("unimplemented")
-	// var allUser []User
-	// tx := u.db.Find(&allUser)
-	// if tx.Error != nil {
-	// 	return nil, tx.Error
-	// }
+	var allUsers []User
+	tx := u.db.Find(&allUsers)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
 
+	var allUserCore []user.Core
+	for _, v := range allUsers {
+		allUserCore = append(allUserCore, user.Core{
+			ID:        v.ID,
+			Name:      v.Name,
+			Email:     v.Email,
+			Password:  v.Password,
+			Phone:     v.Phone,
+			Address:   v.Address,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		})
+	}
+
+	return allUserCore, nil
 }
 
 // Delete implements user.DataInterface.
