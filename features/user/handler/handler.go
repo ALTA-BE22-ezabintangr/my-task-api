@@ -3,6 +3,7 @@ package handler
 import (
 	"myTaskApp/features/user"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -70,5 +71,29 @@ func (uh *UserHandler) GetAll(c echo.Context) error {
 		"status":  "success",
 		"message": "success read data",
 		"results": allUserResponse,
+	})
+}
+
+func (uh *UserHandler) Delete(c echo.Context) error {
+	id := c.Param("id")
+	idConv, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error convert id: " + err.Error(),
+		})
+	}
+
+	tx := uh.userService.Delete(uint(idConv))
+	if tx != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error delete data " + tx.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusCreated, map[string]any{
+		"status":  "success",
+		"message": "success delete user",
 	})
 }

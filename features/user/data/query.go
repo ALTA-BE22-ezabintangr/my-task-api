@@ -63,5 +63,9 @@ func (u *userQuery) SelectAll() ([]user.Core, error) {
 
 // Delete implements user.DataInterface.
 func (u *userQuery) Delete(id uint) error {
-	panic("unimplemented")
+	tx := u.db.Delete(&User{}, id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }

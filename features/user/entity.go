@@ -22,4 +22,5 @@ type DataInterface interface {
 type ServiceInterface interface {
 	Create(input Core) error
 	GetAll() ([]Core, error)
+	Delete(id uint) error
 }
