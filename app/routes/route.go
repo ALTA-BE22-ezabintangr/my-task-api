@@ -15,6 +15,7 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 	userService := service.New(dataService)
 	userHandlerAPI := handler.New(userService)
 
-	e.GET("/users", userHandlerAPI.GetAll)
 	e.POST("/users", userHandlerAPI.Register)
+	e.GET("/users", userHandlerAPI.GetAll)
+	e.DELETE("/users/:id", userHandlerAPI.Delete)
 }
