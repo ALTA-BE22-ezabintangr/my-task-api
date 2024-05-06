@@ -97,3 +97,44 @@ func (uh *UserHandler) Delete(c echo.Context) error {
 		"message": "success delete user",
 	})
 }
+
+func (uh *UserHandler) Update(c echo.Context) error {
+	id := c.Param("id")
+	idConv, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error convert id: " + err.Error(),
+		})
+	}
+
+	updateUser := UserRequest{}
+	errBind := c.Bind(&updateUser)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error bind data: " + errBind.Error(),
+		})
+	}
+
+	updateCore := user.Core{
+		Name:     updateUser.Name,
+		Email:    updateUser.Email,
+		Password: updateUser.Password,
+		Phone:    updateUser.Phone,
+		Address:  updateUser.Address,
+	}
+
+	errUpdate := uh.userService.Update(uint(idConv), updateCore)
+	if errUpdate != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error update data " + errUpdate.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"status":  "success",
+		"message": "success update user",
+	})
+}
