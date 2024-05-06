@@ -69,3 +69,34 @@ func (u *userQuery) Delete(id uint) error {
 	}
 	return nil
 }
+
+// Update implements user.DataInterface.
+func (u *userQuery) Update(id uint, input user.Core) error {
+
+	tx := u.db.Model(&User{}).Where("id=?", id).Updates(input)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
+// var currentUser User
+// tx := u.db.First(&currentUser, id)
+// if tx.Error != nil {
+// 	if tx.Error == gorm.ErrRecordNotFound {
+// 		return errors.New("User not found")
+// 	}
+// 	return tx.Error
+// }
+
+// currentUser.Name = input.Name
+// currentUser.Email = input.Email
+// currentUser.Password = input.Password
+// currentUser.Address = input.Address
+// currentUser.Phone = input.Phone
+
+// tx = u.db.Save(&currentUser)
+// if tx.Error != nil {
+// 	return tx.Error
+// }

@@ -17,10 +17,12 @@ type DataInterface interface {
 	Insert(input Core) error
 	SelectAll() ([]Core, error)
 	Delete(id uint) error
+	Update(id uint, input Core) error
 }
 
 type ServiceInterface interface {
 	Create(input Core) error
 	GetAll() ([]Core, error)
 	Delete(id uint) error
+	Update(id uint, input Core) error
 }

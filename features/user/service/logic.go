@@ -40,3 +40,11 @@ func (u *userService) Delete(id uint) error {
 	}
 	return u.userData.Delete(id)
 }
+
+// Update implements user.ServiceInterface.
+func (u *userService) Update(id uint, input user.Core) error {
+	if id <= 0 {
+		return errors.New("id not valid")
+	}
+	return u.userData.Update(id, input)
+}

@@ -18,4 +18,5 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 	e.POST("/users", userHandlerAPI.Register)
 	e.GET("/users", userHandlerAPI.GetAll)
 	e.DELETE("/users/:id", userHandlerAPI.Delete)
+	e.PUT("/users/:id", userHandlerAPI.Update)
 }
