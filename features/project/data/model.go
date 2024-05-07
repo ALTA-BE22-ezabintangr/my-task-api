@@ -1,7 +1,7 @@
 package data
 
 import (
-	_userData "myTaskApp/features/user/data"
+	"myTaskApp/features/user/data"
 
 	"gorm.io/gorm"
 )
@@ -11,5 +11,11 @@ type Project struct {
 	UserID      uint
 	ProjectName string
 	Description string
-	User        _userData.User `gorm:"references:ID;foreignKey:UserID"`
+	User        data.User `gorm:"foreignKey:UserID"`
 }
+
+// func GetProjectsForUser(db *gorm.DB, userID int) ([]Project, error) {
+// 	var projects []Project
+// 	err := db.Preload("User").Where("user_id = ?", userID).Find(&projects).Error
+// 	return projects, err
+// }

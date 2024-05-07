@@ -24,13 +24,11 @@ func (u *userService) Create(input user.Core) error {
 		return errors.New("nama/email/password tidak boleh kosong")
 	}
 
-	if input.Password != "" {
-		result, errHash := u.hashService.HashPassword(input.Password)
-		if errHash != nil {
-			return errHash
-		}
-		input.Password = result
+	result, errHash := u.hashService.HashPassword(input.Password)
+	if errHash != nil {
+		return errHash
 	}
+	input.Password = result
 
 	err := u.userData.Insert(input)
 	if err != nil {

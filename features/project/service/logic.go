@@ -40,5 +40,5 @@ func (p *projectService) Update(id uint, input project.Core) error {
 
 // Delete implements project.ServiceInterface.
 func (p *projectService) Delete(id uint) error {
-	panic("unimplemented")
+	return p.projectData.Delete(id)
 }
