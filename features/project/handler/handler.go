@@ -118,3 +118,27 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 		"message": "succes update project",
 	})
 }
+
+func (h *ProjectHandler) DeleteProject(c echo.Context) error {
+	id := c.Param("id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error convert id " + errConv.Error(),
+		})
+	}
+
+	tx := h.projectService.Delete(uint(idConv))
+	if tx != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error delete data " + tx.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusCreated, map[string]any{
+		"status":  "success",
+		"message": "success delete project",
+	})
+}

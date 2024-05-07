@@ -69,5 +69,9 @@ func (p *projectQuery) Update(id uint, input project.Core) error {
 
 // Delete implements project.DataInterface.
 func (p *projectQuery) Delete(id uint) error {
-	panic("unimplemented")
+	tx := p.db.Delete(&Project{}, id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }
