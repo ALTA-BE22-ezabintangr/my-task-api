@@ -33,4 +33,5 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 
 	e.POST("/projects", projectHandlerAPI.CreateProject)
 	e.GET("/projects", projectHandlerAPI.GetAllProject)
+	e.PUT("/projects/:id", projectHandlerAPI.UpdateProject)
 }
