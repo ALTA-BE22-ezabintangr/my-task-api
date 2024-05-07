@@ -138,3 +138,34 @@ func (uh *UserHandler) Update(c echo.Context) error {
 		"message": "success update user",
 	})
 }
+
+func (uh *UserHandler) Login(c echo.Context) error {
+	loginUser := LoginRequest{}
+	errBind := c.Bind(&loginUser)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error bind data: " + errBind.Error(),
+		})
+	}
+
+	login, errLogin := uh.userService.Login(loginUser.Email, loginUser.Password)
+	if errLogin != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error login " + errLogin.Error(),
+		})
+	}
+
+	var resultResponse = map[string]any{
+		"id":    login.ID,
+		"name":  login.Name,
+		"email": login.Email,
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"status":  "success",
+		"message": "success login",
+		"data":    resultResponse,
+	})
+}

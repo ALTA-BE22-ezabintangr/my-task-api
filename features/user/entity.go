@@ -18,6 +18,7 @@ type DataInterface interface {
 	SelectAll() ([]Core, error)
 	Delete(id uint) error
 	Update(id uint, input Core) error
+	Login(email, password string) (*Core, error)
 }
 
 type ServiceInterface interface {
@@ -25,4 +26,5 @@ type ServiceInterface interface {
 	GetAll() ([]Core, error)
 	Delete(id uint) error
 	Update(id uint, input Core) error
+	Login(email, password string) (*Core, error)
 }

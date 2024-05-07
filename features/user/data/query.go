@@ -81,6 +81,28 @@ func (u *userQuery) Update(id uint, input user.Core) error {
 	return nil
 }
 
+// Login implements user.DataInterface.
+func (u *userQuery) Login(email string, password string) (*user.Core, error) {
+	var userData User
+	tx := u.db.Where("email = ?", email).First(&userData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var userCore = user.Core{
+		ID:        userData.ID,
+		Name:      userData.Name,
+		Email:     userData.Email,
+		Password:  userData.Password,
+		Phone:     userData.Phone,
+		Address:   userData.Address,
+		CreatedAt: userData.CreatedAt,
+		UpdatedAt: userData.UpdatedAt,
+	}
+
+	return &userCore, nil
+}
+
 // var currentUser User
 // tx := u.db.First(&currentUser, id)
 // if tx.Error != nil {
