@@ -3,9 +3,11 @@ package migrations
 import (
 	"myTaskApp/app/configs"
 	"myTaskApp/app/databases"
-	"myTaskApp/features/user/data"
+	_projectData "myTaskApp/features/project/data"
+	_userData "myTaskApp/features/user/data"
 )
 
 func InitialMigration() {
-	databases.InitDBMysql(configs.InitConfig()).AutoMigrate(&data.User{})
+	databases.InitDBMysql(configs.InitConfig()).AutoMigrate(&_userData.User{})
+	databases.InitDBMysql(configs.InitConfig()).AutoMigrate(&_projectData.Project{})
 }
