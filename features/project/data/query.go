@@ -60,7 +60,11 @@ func (p *projectQuery) SelectAll() ([]project.Core, error) {
 
 // Update implements project.DataInterface.
 func (p *projectQuery) Update(id uint, input project.Core) error {
-	panic("unimplemented")
+	tx := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }
 
 // Delete implements project.DataInterface.

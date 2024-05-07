@@ -35,7 +35,7 @@ func (p *projectService) GetAll() ([]project.Core, error) {
 
 // Update implements project.ServiceInterface.
 func (p *projectService) Update(id uint, input project.Core) error {
-	panic("unimplemented")
+	return p.projectData.Update(id, input)
 }
 
 // Delete implements project.ServiceInterface.

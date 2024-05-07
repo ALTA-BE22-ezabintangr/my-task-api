@@ -3,6 +3,7 @@ package handler
 import (
 	"myTaskApp/features/project"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -78,5 +79,42 @@ func (h *ProjectHandler) GetAllProject(c echo.Context) error {
 		"status":  "success",
 		"message": "success get all project",
 		"project": allProjectResponse,
+	})
+}
+
+func (h *ProjectHandler) UpdateProject(c echo.Context) error {
+	id := c.Param("id")
+	idInt, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error convert id " + errConv.Error(),
+		})
+	}
+
+	updateRequest := UpdateRequest{}
+	errBind := c.Bind(&updateRequest)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error bind data " + errBind.Error(),
+		})
+	}
+
+	updateCore := project.Core{
+		ProjectName: updateRequest.ProjectName,
+		Description: updateRequest.Description,
+	}
+	err := h.projectService.Update(uint(idInt), updateCore)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error update data" + err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"status":  "success",
+		"message": "succes update project",
 	})
 }
