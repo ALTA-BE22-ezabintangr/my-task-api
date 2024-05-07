@@ -13,9 +13,3 @@ type Project struct {
 	Description string
 	User        data.User `gorm:"foreignKey:UserID"`
 }
-
-// func GetProjectsForUser(db *gorm.DB, userID int) ([]Project, error) {
-// 	var projects []Project
-// 	err := db.Preload("User").Where("user_id = ?", userID).Find(&projects).Error
-// 	return projects, err
-// }
