@@ -7,3 +7,8 @@ type UserRequest struct {
 	Phone    string `json:"phone" form:"phone"`
 	Address  string `json:"address" form:"address"`
 }
+
+type LoginRequest struct {
+	Email    string `gorm:"unique" json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
+}
