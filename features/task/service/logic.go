@@ -27,13 +27,13 @@ func (t *taskService) Create(input task.Core) error {
 	return nil
 }
 
-// Delete implements task.ServiceInterface.
-func (t *taskService) Delete(id uint) error {
-	panic("unimplemented")
+// GetTaskbyId implements task.ServiceInterface.
+func (t *taskService) GetTaskbyId(id uint) ([]task.Core, error) {
+	return t.taskData.GetTaskbyUserId(id)
 }
 
-// GetAll implements task.ServiceInterface.
-func (t *taskService) GetAll() ([]task.Core, error) {
+// Delete implements task.ServiceInterface.
+func (t *taskService) Delete(id uint) error {
 	panic("unimplemented")
 }
 

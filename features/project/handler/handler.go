@@ -49,15 +49,6 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 }
 
 func (h *ProjectHandler) GetAllProject(c echo.Context) error {
-	requestAll := ProjectResponse{}
-	errBind := c.Bind(&requestAll)
-	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error bind data: " + errBind.Error(),
-		})
-	}
-
 	result, errGetAll := h.projectService.GetAll()
 	if errGetAll != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
