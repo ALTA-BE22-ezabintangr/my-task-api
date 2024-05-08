@@ -14,6 +14,7 @@ type Core struct {
 type DataInterface interface {
 	Insert(input Core) error
 	SelectAll() ([]Core, error)
+	GetProjectById(id uint) (Core, error)
 	Delete(id uint) error
 	Update(id uint, input Core) error
 }
@@ -21,6 +22,7 @@ type DataInterface interface {
 type ServiceInterface interface {
 	Create(input Core) error
 	GetAll() ([]Core, error)
+	GetProjectById(id uint) (Core, error)
 	Delete(id uint) error
 	Update(id uint, input Core) error
 }

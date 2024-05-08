@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"myTaskApp/app/middlewares"
 	"myTaskApp/features/user"
 	encrypts "myTaskApp/utils"
 )
@@ -59,15 +60,19 @@ func (u *userService) Update(id uint, input user.Core) error {
 }
 
 // Login implements user.ServiceInterface.
-func (u *userService) Login(email string, password string) (*user.Core, error) {
-	data, err := u.userData.Login(email, password)
+func (u *userService) Login(email string, password string) (data *user.Core, token string, err error) {
+	data, err = u.userData.Login(email, password)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	isLoginValid := u.hashService.CheckPasswordHash(data.Password, password)
 	if !isLoginValid {
-		return nil, errors.New("[validation] password tidak sesuai")
+		return nil, "", errors.New("[validation] password tidak sesuai")
 	}
-	return data, nil
+	token, errJWT := middlewares.CreateToken(int(data.ID))
+	if errJWT != nil {
+		return nil, "", errJWT
+	}
+	return data, token, nil
 }

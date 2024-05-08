@@ -26,5 +26,5 @@ type ServiceInterface interface {
 	GetAll() ([]Core, error)
 	Delete(id uint) error
 	Update(id uint, input Core) error
-	Login(email, password string) (*Core, error)
+	Login(email, password string) (data *Core, token string, err error)
 }

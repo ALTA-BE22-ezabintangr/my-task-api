@@ -33,6 +33,11 @@ func (p *projectService) GetAll() ([]project.Core, error) {
 	return p.projectData.SelectAll()
 }
 
+// GetProjectById implements project.ServiceInterface.
+func (p *projectService) GetProjectById(id uint) (project.Core, error) {
+	return p.projectData.GetProjectById(id)
+}
+
 // Update implements project.ServiceInterface.
 func (p *projectService) Update(id uint, input project.Core) error {
 	return p.projectData.Update(id, input)

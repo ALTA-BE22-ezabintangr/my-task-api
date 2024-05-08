@@ -1,7 +1,7 @@
 package data
 
 import (
-	projectData "myTaskApp/features/project/data"
+	dataproject "myTaskApp/features/project/data"
 
 	"gorm.io/gorm"
 )
@@ -12,5 +12,5 @@ type Task struct {
 	TaskName        string
 	DescriptionTask string
 	StatusTask      string
-	Projects        projectData.Project `gorm:"foreignkey:ProjectID"`
+	Projects        dataproject.Project `gorm:"foreignkey:ProjectID"`
 }
