@@ -149,7 +149,7 @@ func (uh *UserHandler) Login(c echo.Context) error {
 		})
 	}
 
-	login, errLogin := uh.userService.Login(loginUser.Email, loginUser.Password)
+	login, token, errLogin := uh.userService.Login(loginUser.Email, loginUser.Password)
 	if errLogin != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -160,7 +160,7 @@ func (uh *UserHandler) Login(c echo.Context) error {
 	var resultResponse = map[string]any{
 		"id":    login.ID,
 		"name":  login.Name,
-		"email": login.Email,
+		"token": token,
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{

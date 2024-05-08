@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"myTaskApp/app/middlewares"
 	_projectData "myTaskApp/features/project/data"
 	_projectHandler "myTaskApp/features/project/handler"
 	_projectService "myTaskApp/features/project/service"
@@ -31,20 +32,21 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 	taskService := _taskService.New(taskData)
 	taskHandlerAPI := _taskHandler.New(taskService)
 
-	e.POST("/users", userHandlerAPI.Register)
-	e.GET("/users", userHandlerAPI.GetAll)
-	e.DELETE("/users/:id", userHandlerAPI.Delete)
-	e.PUT("/users/:id", userHandlerAPI.Update)
-
 	e.POST("/login", userHandlerAPI.Login)
 
-	e.POST("/projects", projectHandlerAPI.CreateProject)
-	e.GET("/projects", projectHandlerAPI.GetAllProject)
-	e.PUT("/projects/:id", projectHandlerAPI.UpdateProject)
-	e.DELETE("/projects/:id", projectHandlerAPI.DeleteProject)
+	e.POST("/users", userHandlerAPI.Register)
+	e.GET("/users", userHandlerAPI.GetAll, middlewares.JWTMiddleware())
+	e.DELETE("/users/:id", userHandlerAPI.Delete, middlewares.JWTMiddleware())
+	e.PUT("/users/:id", userHandlerAPI.Update, middlewares.JWTMiddleware())
 
-	e.POST("/tasks", taskHandlerAPI.CreateTask)
-	e.GET("/tasks/:id", taskHandlerAPI.GetTaskById)
-	e.PUT("/tasks/:id", taskHandlerAPI.UpdateTaskById)
-	e.DELETE("/tasks/:id", taskHandlerAPI.DeleteTaskById)
+	e.POST("/projects", projectHandlerAPI.CreateProject, middlewares.JWTMiddleware())
+	e.GET("/projects", projectHandlerAPI.GetAllProject, middlewares.JWTMiddleware())
+	e.GET("/projects/:id", projectHandlerAPI.GetProjectById, middlewares.JWTMiddleware())
+	e.PUT("/projects/:id", projectHandlerAPI.UpdateProject, middlewares.JWTMiddleware())
+	e.DELETE("/projects/:id", projectHandlerAPI.DeleteProject, middlewares.JWTMiddleware())
+
+	e.POST("/tasks", taskHandlerAPI.CreateTask, middlewares.JWTMiddleware())
+	e.GET("/tasks/:id", taskHandlerAPI.GetTaskById, middlewares.JWTMiddleware())
+	e.PUT("/tasks/:id", taskHandlerAPI.UpdateTaskById, middlewares.JWTMiddleware())
+	e.DELETE("/tasks/:id", taskHandlerAPI.DeleteTaskById, middlewares.JWTMiddleware())
 }

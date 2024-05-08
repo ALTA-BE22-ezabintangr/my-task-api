@@ -58,6 +58,25 @@ func (p *projectQuery) SelectAll() ([]project.Core, error) {
 	return allProjectCore, nil
 }
 
+// GetProjectById implements project.DataInterface.
+func (p *projectQuery) GetProjectById(id uint) (project.Core, error) {
+	var projectId Project
+	tx := p.db.Find(&projectId, id)
+	if tx.Error != nil {
+		return project.Core{}, tx.Error
+	}
+
+	projectIdCore := project.Core{
+		ID:          id,
+		UserID:      projectId.UserID,
+		ProjectName: projectId.ProjectName,
+		Description: projectId.Description,
+	}
+
+	return projectIdCore, nil
+
+}
+
 // Update implements project.DataInterface.
 func (p *projectQuery) Update(id uint, input project.Core) error {
 	tx := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)

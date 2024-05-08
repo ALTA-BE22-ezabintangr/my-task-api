@@ -73,6 +73,38 @@ func (h *ProjectHandler) GetAllProject(c echo.Context) error {
 	})
 }
 
+func (h *ProjectHandler) GetProjectById(c echo.Context) error {
+	id := c.Param("id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error convert id " + errConv.Error(),
+		})
+	}
+
+	result, err := h.projectService.GetProjectById(uint(idConv))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error get data " + err.Error(),
+		})
+	}
+
+	responseResult := ProjectResponseById{
+		ID:          result.ID,
+		UserID:      result.UserID,
+		ProjectName: result.ProjectName,
+		Description: result.Description,
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"status":  "success",
+		"message": "success get all project",
+		"project": responseResult,
+	})
+}
+
 func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 	id := c.Param("id")
 	idInt, errConv := strconv.Atoi(id)
