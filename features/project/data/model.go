@@ -1,6 +1,8 @@
 package data
 
 import (
+	userData "myTaskApp/features/user/data"
+
 	"gorm.io/gorm"
 )
 
@@ -9,4 +11,5 @@ type Project struct {
 	UserID      uint
 	ProjectName string
 	Description string
+	User        userData.User `gorm:"foreignKey:UserID"`
 }

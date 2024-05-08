@@ -1,6 +1,8 @@
 package task
 
-import "time"
+import (
+	"time"
+)
 
 type Core struct {
 	ID              uint
@@ -17,12 +19,12 @@ type DataInterface interface {
 	Insert(input Core) error
 	Delete(id uint) error
 	Update(id uint, input Core) error
-	GetTaskbyUserId(id uint) ([]Core, error)
+	GetTaskById(id uint) (Core, error)
 }
 
 type ServiceInterface interface {
 	Create(input Core) error
 	Delete(id uint) error
 	Update(id uint, input Core) error
-	GetTaskbyId(id uint) ([]Core, error)
+	GetTaskbyId(id uint) (Core, error)
 }

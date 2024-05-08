@@ -29,7 +29,6 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 	}
 
 	newTaskCore := task.Core{
-		UserID:          newTask.UserID,
 		ProjectID:       newTask.ProjectID,
 		TaskName:        newTask.TaskName,
 		DescriptionTask: newTask.DescriptionTask,
@@ -50,7 +49,7 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 	})
 }
 
-func (h *TaskHandler) GetTaskbyUserId(c echo.Context) error {
+func (h *TaskHandler) GetTaskById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
@@ -68,18 +67,55 @@ func (h *TaskHandler) GetTaskbyUserId(c echo.Context) error {
 		})
 	}
 
-	var resultResponse []ResponseById
-	for _, v := range result {
-		resultResponse = append(resultResponse, ResponseById{
-			ProjectID:  v.ProjectID,
-			TaskName:   v.TaskName,
-			StatusTask: v.StatusTask,
-		})
+	resultResponse := ResponseById{
+		ProjectID:  result.ProjectID,
+		TaskName:   result.TaskName,
+		StatusTask: result.StatusTask,
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
 		"status":  "success",
 		"message": "success get task by id user",
 		"result":  resultResponse,
+	})
+}
+
+func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
+	id := c.Param("id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error convert id " + errConv.Error(),
+		})
+	}
+
+	updateRequest := TaskRequest{}
+	errBind := c.Bind(&updateRequest)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error bind data " + errBind.Error(),
+		})
+	}
+
+	updateCore := task.Core{
+		ProjectID:       updateRequest.ProjectID,
+		TaskName:        updateRequest.TaskName,
+		DescriptionTask: updateRequest.DescriptionTask,
+		StatusTask:      updateRequest.StatusTask,
+	}
+
+	err := h.HandlerService.Update(uint(idConv), updateCore)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error update data" + err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"status":  "success",
+		"message": "success update task by id",
 	})
 }
