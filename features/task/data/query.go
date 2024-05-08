@@ -22,7 +22,6 @@ func (t *taskQuery) Insert(input task.Core) error {
 
 	taskGorm = Task{
 		Model:           gorm.Model{},
-		UserID:          input.UserID,
 		ProjectID:       input.ProjectID,
 		TaskName:        input.TaskName,
 		DescriptionTask: input.DescriptionTask,
@@ -38,25 +37,21 @@ func (t *taskQuery) Insert(input task.Core) error {
 }
 
 // GetTaskbyUserId implements task.DataInterface.
-func (t *taskQuery) GetTaskbyUserId(id uint) ([]task.Core, error) {
-	var allTaskCurrent []Task
-	tx := t.db.Model(Task{}).Where("user_id= ?", id).Find(&allTaskCurrent)
+func (t *taskQuery) GetTaskById(id uint) (task.Core, error) {
+	var allTaskCurrent Task
+	tx := t.db.First(&allTaskCurrent, id)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return task.Core{}, tx.Error
 	}
 
-	var taskCurrentCore []task.Core
-	for _, v := range allTaskCurrent {
-		taskCurrentCore = append(taskCurrentCore, task.Core{
-			ID:              v.ID,
-			UserID:          id,
-			ProjectID:       v.ProjectID,
-			TaskName:        v.TaskName,
-			DescriptionTask: v.DescriptionTask,
-			StatusTask:      v.StatusTask,
-			CreatedAt:       v.CreatedAt,
-			UpdatedAt:       v.UpdatedAt,
-		})
+	taskCurrentCore := task.Core{
+		ID:              allTaskCurrent.ID,
+		ProjectID:       allTaskCurrent.ProjectID,
+		TaskName:        allTaskCurrent.TaskName,
+		DescriptionTask: allTaskCurrent.DescriptionTask,
+		StatusTask:      allTaskCurrent.StatusTask,
+		CreatedAt:       allTaskCurrent.CreatedAt,
+		UpdatedAt:       allTaskCurrent.UpdatedAt,
 	}
 
 	return taskCurrentCore, nil
@@ -65,7 +60,11 @@ func (t *taskQuery) GetTaskbyUserId(id uint) ([]task.Core, error) {
 
 // Update implements task.DataInterface.
 func (t *taskQuery) Update(id uint, input task.Core) error {
-	panic("unimplemented")
+	tx := t.db.Model(&Task{}).Where("id = ?", id).Updates(input)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }
 
 // Delete implements task.DataInterface.

@@ -44,5 +44,6 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 	e.DELETE("/projects/:id", projectHandlerAPI.DeleteProject)
 
 	e.POST("/tasks", taskHandlerAPI.CreateTask)
-	e.GET("/tasks/id:", taskHandlerAPI.GetTaskbyUserId)
+	e.GET("/tasks/:id", taskHandlerAPI.GetTaskById)
+	e.PUT("/tasks/:id", taskHandlerAPI.UpdateTaskById)
 }
