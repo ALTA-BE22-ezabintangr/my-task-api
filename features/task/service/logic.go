@@ -34,7 +34,7 @@ func (t *taskService) GetTaskbyId(id uint) (task.Core, error) {
 
 // Delete implements task.ServiceInterface.
 func (t *taskService) Delete(id uint) error {
-	panic("unimplemented")
+	return t.taskData.Delete(id)
 }
 
 // Update implements task.ServiceInterface.
