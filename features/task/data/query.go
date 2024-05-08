@@ -39,7 +39,7 @@ func (t *taskQuery) Insert(input task.Core) error {
 // GetTaskbyUserId implements task.DataInterface.
 func (t *taskQuery) GetTaskById(id uint) (task.Core, error) {
 	var allTaskCurrent Task
-	tx := t.db.First(&allTaskCurrent, id)
+	tx := t.db.Find(&allTaskCurrent, id)
 	if tx.Error != nil {
 		return task.Core{}, tx.Error
 	}
