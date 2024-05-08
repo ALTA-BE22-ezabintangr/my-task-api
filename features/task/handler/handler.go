@@ -119,3 +119,27 @@ func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 		"message": "success update task by id",
 	})
 }
+
+func (h *TaskHandler) DeleteTaskById(c echo.Context) error {
+	id := c.Param("id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"status":  "failed",
+			"message": "error convert id " + errConv.Error(),
+		})
+	}
+
+	err := h.HandlerService.Delete(uint(idConv))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]any{
+			"status":  "failed",
+			"message": "error delete data" + err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"status":  "success",
+		"message": "success delete task by id",
+	})
+}

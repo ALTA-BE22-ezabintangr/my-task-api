@@ -69,5 +69,9 @@ func (t *taskQuery) Update(id uint, input task.Core) error {
 
 // Delete implements task.DataInterface.
 func (t *taskQuery) Delete(id uint) error {
-	panic("unimplemented")
+	tx := t.db.Delete(&Task{}, id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }
