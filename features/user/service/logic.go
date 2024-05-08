@@ -65,5 +65,9 @@ func (u *userService) Login(email string, password string) (*user.Core, error) {
 		return nil, err
 	}
 
+	isLoginValid := u.hashService.CheckPasswordHash(data.Password, password)
+	if !isLoginValid {
+		return nil, errors.New("[validation] password tidak sesuai")
+	}
 	return data, nil
 }
