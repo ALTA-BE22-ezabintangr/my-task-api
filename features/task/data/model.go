@@ -14,6 +14,6 @@ type Task struct {
 	TaskName        string
 	DescriptionTask string
 	StatusTask      string
-	User            userData.User       `gorm:"foreignKey:UserID"`
-	Projects        projectData.Project `gorm:"foreignKey:ProjectID"`
+	User            userData.User       `gorm:"foreignkey:UserID"`
+	Projects        projectData.Project `gorm:"foreignkey:ProjectID"`
 }

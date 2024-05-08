@@ -37,9 +37,30 @@ func (t *taskQuery) Insert(input task.Core) error {
 	return nil
 }
 
-// SelectAll implements task.DataInterface.
-func (t *taskQuery) SelectAll() ([]task.Core, error) {
-	panic("unimplemented")
+// GetTaskbyUserId implements task.DataInterface.
+func (t *taskQuery) GetTaskbyUserId(id uint) ([]task.Core, error) {
+	var allTaskCurrent []Task
+	tx := t.db.Model(Task{}).Where("user_id= ?", id).Find(&allTaskCurrent)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var taskCurrentCore []task.Core
+	for _, v := range allTaskCurrent {
+		taskCurrentCore = append(taskCurrentCore, task.Core{
+			ID:              v.ID,
+			UserID:          id,
+			ProjectID:       v.ProjectID,
+			TaskName:        v.TaskName,
+			DescriptionTask: v.DescriptionTask,
+			StatusTask:      v.StatusTask,
+			CreatedAt:       v.CreatedAt,
+			UpdatedAt:       v.UpdatedAt,
+		})
+	}
+
+	return taskCurrentCore, nil
+
 }
 
 // Update implements task.DataInterface.
