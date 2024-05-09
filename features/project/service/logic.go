@@ -17,7 +17,7 @@ func New(pd project.DataInterface) project.ServiceInterface {
 
 // Create implements project.ServiceInterface.
 func (p *projectService) Create(input project.Core) error {
-	if input.ProjectName == "" || input.UserID == 0 {
+	if input.ProjectName == "" {
 		return errors.New("nama project/userID tidak boleh kosong")
 	}
 	err := p.projectData.Insert(input)
@@ -29,21 +29,21 @@ func (p *projectService) Create(input project.Core) error {
 }
 
 // GetAll implements project.ServiceInterface.
-func (p *projectService) GetAll() ([]project.Core, error) {
-	return p.projectData.SelectAll()
+func (p *projectService) GetAll(id uint) ([]project.Core, error) {
+	return p.projectData.SelectAll(id)
 }
 
 // GetProjectById implements project.ServiceInterface.
-func (p *projectService) GetProjectById(id uint) (project.Core, error) {
-	return p.projectData.GetProjectById(id)
+func (p *projectService) GetProjectById(id uint, idUser uint) (input project.Core, err error) {
+	return p.projectData.GetProjectById(id, idUser)
 }
 
 // Update implements project.ServiceInterface.
-func (p *projectService) Update(id uint, input project.Core) error {
-	return p.projectData.Update(id, input)
+func (p *projectService) Update(id uint, idUser uint, input project.Core) error {
+	return p.projectData.Update(id, idUser, input)
 }
 
 // Delete implements project.ServiceInterface.
-func (p *projectService) Delete(id uint) error {
-	return p.projectData.Delete(id)
+func (p *projectService) Delete(id uint, idUser uint) error {
+	return p.projectData.Delete(id, idUser)
 }

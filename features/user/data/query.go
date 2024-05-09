@@ -37,33 +37,25 @@ func (u *userQuery) Insert(input user.Core) error {
 }
 
 // SelectAll implements user.DataInterface.
-func (u *userQuery) SelectAll() ([]user.Core, error) {
-	var allUsers []User
-	tx := u.db.Find(&allUsers)
+func (u *userQuery) SelectProfileById(id uint) (*user.Core, error) {
+	var userProfile User
+	tx := u.db.First(&userProfile, id)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 
-	var allUserCore []user.Core
-	for _, v := range allUsers {
-		allUserCore = append(allUserCore, user.Core{
-			ID:        v.ID,
-			Name:      v.Name,
-			Email:     v.Email,
-			Password:  v.Password,
-			Phone:     v.Phone,
-			Address:   v.Address,
-			CreatedAt: v.CreatedAt,
-			UpdatedAt: v.UpdatedAt,
-		})
+	userCore := user.Core{
+		ID:        id,
+		Name:      userProfile.Name,
+		Email:     userProfile.Email,
+		Password:  userProfile.Password,
+		Phone:     userProfile.Phone,
+		Address:   userProfile.Address,
+		CreatedAt: userProfile.CreatedAt,
+		UpdatedAt: userProfile.UpdatedAt,
 	}
 
-	return allUserCore, nil
-}
-
-// SelectAllById implements user.DataInterface.
-func (u *userQuery) SelectAllById() ([]user.Core, error) {
-	panic("unimplemented")
+	return &userCore, nil
 }
 
 // Delete implements user.DataInterface.
@@ -107,23 +99,3 @@ func (u *userQuery) Login(email string, password string) (*user.Core, error) {
 
 	return &userCore, nil
 }
-
-// var currentUser User
-// tx := u.db.First(&currentUser, id)
-// if tx.Error != nil {
-// 	if tx.Error == gorm.ErrRecordNotFound {
-// 		return errors.New("User not found")
-// 	}
-// 	return tx.Error
-// }
-
-// currentUser.Name = input.Name
-// currentUser.Email = input.Email
-// currentUser.Password = input.Password
-// currentUser.Address = input.Address
-// currentUser.Phone = input.Phone
-
-// tx = u.db.Save(&currentUser)
-// if tx.Error != nil {
-// 	return tx.Error
-// }

@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"myTaskApp/app/middlewares"
 	"myTaskApp/features/user"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -49,8 +49,9 @@ func (uh *UserHandler) Register(c echo.Context) error {
 	})
 }
 
-func (uh *UserHandler) GetAll(c echo.Context) error {
-	result, err := uh.userService.GetAll()
+func (uh *UserHandler) GetProfileUser(c echo.Context) error {
+	idToken := middlewares.ExtractTokenUserId(c)
+	result, err := uh.userService.GetProfileUser(uint(idToken))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -58,33 +59,22 @@ func (uh *UserHandler) GetAll(c echo.Context) error {
 		})
 	}
 
-	var allUserResponse []UserResponse
-	for _, value := range result {
-		allUserResponse = append(allUserResponse, UserResponse{
-			ID:    value.ID,
-			Name:  value.Name,
-			Email: value.Email,
-		})
+	userResponse := UserResponse{
+		ID:    result.ID,
+		Name:  result.Name,
+		Email: result.Email,
 	}
 
 	return c.JSON(http.StatusCreated, map[string]any{
 		"status":  "success",
 		"message": "success read data",
-		"results": allUserResponse,
+		"results": userResponse,
 	})
 }
 
 func (uh *UserHandler) Delete(c echo.Context) error {
-	id := c.Param("id")
-	idConv, err := strconv.Atoi(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error convert id: " + err.Error(),
-		})
-	}
-
-	tx := uh.userService.Delete(uint(idConv))
+	idToken := middlewares.ExtractTokenUserId(c)
+	tx := uh.userService.Delete(uint(idToken))
 	if tx != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -99,15 +89,7 @@ func (uh *UserHandler) Delete(c echo.Context) error {
 }
 
 func (uh *UserHandler) Update(c echo.Context) error {
-	id := c.Param("id")
-	idConv, err := strconv.Atoi(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error convert id: " + err.Error(),
-		})
-	}
-
+	idToken := middlewares.ExtractTokenUserId(c)
 	updateUser := UserRequest{}
 	errBind := c.Bind(&updateUser)
 	if errBind != nil {
@@ -125,7 +107,7 @@ func (uh *UserHandler) Update(c echo.Context) error {
 		Address:  updateUser.Address,
 	}
 
-	errUpdate := uh.userService.Update(uint(idConv), updateCore)
+	errUpdate := uh.userService.Update(uint(idToken), updateCore)
 	if errUpdate != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",

@@ -28,16 +28,16 @@ func (t *taskService) Create(input task.Core) error {
 }
 
 // GetTaskbyId implements task.ServiceInterface.
-func (t *taskService) GetTaskbyId(id uint) (task.Core, error) {
-	return t.taskData.GetTaskById(id)
+func (t *taskService) GetTaskbyId(id uint, idUser uint) (task.Core, error) {
+	return t.taskData.GetTaskById(id, idUser)
 }
 
 // Delete implements task.ServiceInterface.
-func (t *taskService) Delete(id uint) error {
-	return t.taskData.Delete(id)
+func (t *taskService) Delete(id uint, idUser uint) error {
+	return t.taskData.Delete(id, idUser)
 }
 
 // Update implements task.ServiceInterface.
-func (t *taskService) Update(id uint, input task.Core) error {
-	return t.taskData.Update(id, input)
+func (t *taskService) Update(id uint, idUser uint, input task.Core) error {
+	return t.taskData.Update(id, idUser, input)
 }

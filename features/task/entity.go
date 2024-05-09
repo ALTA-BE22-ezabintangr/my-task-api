@@ -17,14 +17,14 @@ type Core struct {
 
 type DataInterface interface {
 	Insert(input Core) error
-	Delete(id uint) error
-	Update(id uint, input Core) error
-	GetTaskById(id uint) (Core, error)
+	Delete(id uint, idUser uint) error
+	Update(id uint, idUser uint, input Core) error
+	GetTaskById(id uint, idUser uint) (Core, error)
 }
 
 type ServiceInterface interface {
 	Create(input Core) error
-	Delete(id uint) error
-	Update(id uint, input Core) error
-	GetTaskbyId(id uint) (Core, error)
+	Delete(id uint, idUser uint) error
+	Update(id uint, idUser uint, input Core) error
+	GetTaskbyId(id uint, idUser uint) (Core, error)
 }

@@ -39,8 +39,11 @@ func (u *userService) Create(input user.Core) error {
 }
 
 // GetAll implements user.ServiceInterface.
-func (u *userService) GetAll() ([]user.Core, error) {
-	return u.userData.SelectAll()
+func (u *userService) GetProfileUser(id uint) (*user.Core, error) {
+	if id <= 0 {
+		return nil, errors.New("id not valid")
+	}
+	return u.userData.SelectProfileById(id)
 }
 
 // Delete implements user.ServiceInterface.
@@ -56,6 +59,11 @@ func (u *userService) Update(id uint, input user.Core) error {
 	if id <= 0 {
 		return errors.New("id not valid")
 	}
+	result, errHash := u.hashService.HashPassword(input.Password)
+	if errHash != nil {
+		return errHash
+	}
+	input.Password = result
 	return u.userData.Update(id, input)
 }
 

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"myTaskApp/features/project"
 
 	"gorm.io/gorm"
@@ -36,9 +37,9 @@ func (p *projectQuery) Insert(input project.Core) error {
 }
 
 // SelectAll implements project.DataInterface.
-func (p *projectQuery) SelectAll() ([]project.Core, error) {
+func (p *projectQuery) SelectAll(id uint) ([]project.Core, error) {
 	var allProject []Project
-	tx := p.db.Find(&allProject)
+	tx := p.db.Where("user_id = ?", id).Find(&allProject)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -59,11 +60,15 @@ func (p *projectQuery) SelectAll() ([]project.Core, error) {
 }
 
 // GetProjectById implements project.DataInterface.
-func (p *projectQuery) GetProjectById(id uint) (project.Core, error) {
+func (p *projectQuery) GetProjectById(id uint, idUser uint) (project.Core, error) {
 	var projectId Project
-	tx := p.db.Find(&projectId, id)
+	tx := p.db.First(&projectId, id)
 	if tx.Error != nil {
 		return project.Core{}, tx.Error
+	}
+
+	if projectId.UserID != idUser {
+		return project.Core{}, errors.New("id project tidak sesuai")
 	}
 
 	projectIdCore := project.Core{
@@ -78,19 +83,40 @@ func (p *projectQuery) GetProjectById(id uint) (project.Core, error) {
 }
 
 // Update implements project.DataInterface.
-func (p *projectQuery) Update(id uint, input project.Core) error {
-	tx := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)
+func (p *projectQuery) Update(id uint, idUser uint, input project.Core) error {
+	var projectCurrent Project
+	tx := p.db.First(&projectCurrent, id)
 	if tx.Error != nil {
 		return tx.Error
 	}
+
+	if projectCurrent.UserID != idUser {
+		return errors.New("id project bukan milik anda")
+	}
+
+	tx2 := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)
+	if tx2.Error != nil {
+		return tx2.Error
+	}
+
 	return nil
 }
 
 // Delete implements project.DataInterface.
-func (p *projectQuery) Delete(id uint) error {
-	tx := p.db.Delete(&Project{}, id)
+func (p *projectQuery) Delete(id uint, idUser uint) error {
+	var projectDelete Project
+	tx := p.db.First(&projectDelete, id)
 	if tx.Error != nil {
 		return tx.Error
+	}
+
+	if projectDelete.UserID != idUser {
+		return errors.New("id project bukan milik anda")
+	}
+
+	tx2 := p.db.Delete(&projectDelete)
+	if tx2.Error != nil {
+		return tx2.Error
 	}
 	return nil
 }

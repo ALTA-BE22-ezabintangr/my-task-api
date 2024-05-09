@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"myTaskApp/app/middlewares"
 	"myTaskApp/features/task"
 	"net/http"
 	"strconv"
@@ -27,8 +28,9 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 			"message": "error bind data" + errBind.Error(),
 		})
 	}
-
+	idToken := middlewares.ExtractTokenUserId(c)
 	newTaskCore := task.Core{
+		UserID:          uint(idToken),
 		ProjectID:       newTask.ProjectID,
 		TaskName:        newTask.TaskName,
 		DescriptionTask: newTask.DescriptionTask,
@@ -59,7 +61,8 @@ func (h *TaskHandler) GetTaskById(c echo.Context) error {
 		})
 	}
 
-	result, err := h.HandlerService.GetTaskbyId(uint(idConv))
+	idToken := middlewares.ExtractTokenUserId(c)
+	result, err := h.HandlerService.GetTaskbyId(uint(idConv), uint(idToken))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -68,9 +71,10 @@ func (h *TaskHandler) GetTaskById(c echo.Context) error {
 	}
 
 	resultResponse := ResponseById{
-		ProjectID:  result.ProjectID,
-		TaskName:   result.TaskName,
-		StatusTask: result.StatusTask,
+		ProjectID:       result.ProjectID,
+		TaskName:        result.TaskName,
+		DescriptionTask: result.DescriptionTask,
+		StatusTask:      result.StatusTask,
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
@@ -100,13 +104,13 @@ func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 	}
 
 	updateCore := task.Core{
-		ProjectID:       updateRequest.ProjectID,
 		TaskName:        updateRequest.TaskName,
 		DescriptionTask: updateRequest.DescriptionTask,
 		StatusTask:      updateRequest.StatusTask,
 	}
 
-	err := h.HandlerService.Update(uint(idConv), updateCore)
+	idToken := middlewares.ExtractTokenUserId(c)
+	err := h.HandlerService.Update(uint(idConv), uint(idToken), updateCore)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -130,7 +134,8 @@ func (h *TaskHandler) DeleteTaskById(c echo.Context) error {
 		})
 	}
 
-	err := h.HandlerService.Delete(uint(idConv))
+	idToken := middlewares.ExtractTokenUserId(c)
+	err := h.HandlerService.Delete(uint(idConv), uint(idToken))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",

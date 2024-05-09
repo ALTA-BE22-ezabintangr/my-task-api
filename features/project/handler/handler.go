@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"myTaskApp/app/middlewares"
 	"myTaskApp/features/project"
 	"net/http"
 	"strconv"
@@ -19,6 +20,7 @@ func New(ph project.ServiceInterface) *ProjectHandler {
 }
 
 func (h *ProjectHandler) CreateProject(c echo.Context) error {
+	idToken := middlewares.ExtractTokenUserId(c)
 	newRequest := ProjectRequest{}
 	errBind := c.Bind(&newRequest)
 	if errBind != nil {
@@ -29,7 +31,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	}
 
 	requestCore := project.Core{
-		UserID:      newRequest.UserID,
+		UserID:      uint(idToken),
 		ProjectName: newRequest.ProjectName,
 		Description: newRequest.Description,
 	}
@@ -49,7 +51,8 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 }
 
 func (h *ProjectHandler) GetAllProject(c echo.Context) error {
-	result, errGetAll := h.projectService.GetAll()
+	idToken := middlewares.ExtractTokenUserId(c)
+	result, errGetAll := h.projectService.GetAll(uint(idToken))
 	if errGetAll != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -61,7 +64,6 @@ func (h *ProjectHandler) GetAllProject(c echo.Context) error {
 	for _, v := range result {
 		allProjectResponse = append(allProjectResponse, ProjectResponse{
 			ID:          v.ID,
-			UserID:      v.UserID,
 			ProjectName: v.ProjectName,
 		})
 	}
@@ -83,7 +85,8 @@ func (h *ProjectHandler) GetProjectById(c echo.Context) error {
 		})
 	}
 
-	result, err := h.projectService.GetProjectById(uint(idConv))
+	idToken := middlewares.ExtractTokenUserId(c)
+	result, err := h.projectService.GetProjectById(uint(idConv), uint(idToken))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -93,14 +96,13 @@ func (h *ProjectHandler) GetProjectById(c echo.Context) error {
 
 	responseResult := ProjectResponseById{
 		ID:          result.ID,
-		UserID:      result.UserID,
 		ProjectName: result.ProjectName,
 		Description: result.Description,
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
 		"status":  "success",
-		"message": "success get all project",
+		"message": "success get project",
 		"project": responseResult,
 	})
 }
@@ -123,12 +125,13 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 			"message": "error bind data " + errBind.Error(),
 		})
 	}
-
 	updateCore := project.Core{
 		ProjectName: updateRequest.ProjectName,
 		Description: updateRequest.Description,
 	}
-	err := h.projectService.Update(uint(idInt), updateCore)
+
+	idToken := middlewares.ExtractTokenUserId(c)
+	err := h.projectService.Update(uint(idInt), uint(idToken), updateCore)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
@@ -152,7 +155,8 @@ func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 		})
 	}
 
-	tx := h.projectService.Delete(uint(idConv))
+	idToken := middlewares.ExtractTokenUserId(c)
+	tx := h.projectService.Delete(uint(idConv), uint(idToken))
 	if tx != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"status":  "failed",
