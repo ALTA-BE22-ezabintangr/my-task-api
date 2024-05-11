@@ -51,39 +51,6 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 	})
 }
 
-func (h *TaskHandler) GetTaskById(c echo.Context) error {
-	id := c.Param("id")
-	idConv, errConv := strconv.Atoi(id)
-	if errConv != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error convert id: " + errConv.Error(),
-		})
-	}
-
-	idToken := middlewares.ExtractTokenUserId(c)
-	result, err := h.HandlerService.GetTaskbyId(uint(idConv), uint(idToken))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error get task " + err.Error(),
-		})
-	}
-
-	resultResponse := ResponseById{
-		ProjectID:       result.ProjectID,
-		TaskName:        result.TaskName,
-		DescriptionTask: result.DescriptionTask,
-		StatusTask:      result.StatusTask,
-	}
-
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "success get task by id user",
-		"result":  resultResponse,
-	})
-}
-
 func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
@@ -94,7 +61,7 @@ func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 		})
 	}
 
-	updateRequest := TaskRequest{}
+	updateRequest := TaskUpdateRequest{}
 	errBind := c.Bind(&updateRequest)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, map[string]any{
