@@ -9,4 +9,5 @@ type ProjectResponseById struct {
 	ID          uint
 	ProjectName string
 	Description string
+	TaskList    interface{}
 }

@@ -29,7 +29,7 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 	projectHandlerAPI := _projectHandler.New(projectService)
 
 	taskData := _taskData.New(db)
-	taskService := _taskService.New(taskData)
+	taskService := _taskService.New(taskData, projectData)
 	taskHandlerAPI := _taskHandler.New(taskService)
 
 	e.POST("/login", userHandlerAPI.Login)
@@ -46,7 +46,6 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 	e.DELETE("/projects/:id", projectHandlerAPI.DeleteProject, middlewares.JWTMiddleware())
 
 	e.POST("/tasks", taskHandlerAPI.CreateTask, middlewares.JWTMiddleware())
-	e.GET("/tasks/:id", taskHandlerAPI.GetTaskById, middlewares.JWTMiddleware())
 	e.PUT("/tasks/:id", taskHandlerAPI.UpdateTaskById, middlewares.JWTMiddleware())
 	e.DELETE("/tasks/:id", taskHandlerAPI.DeleteTaskById, middlewares.JWTMiddleware())
 }

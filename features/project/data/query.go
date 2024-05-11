@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"myTaskApp/features/project"
+	"myTaskApp/features/task/data"
 
 	"gorm.io/gorm"
 )
@@ -60,22 +61,33 @@ func (p *projectQuery) SelectAll(id uint) ([]project.Core, error) {
 }
 
 // GetProjectById implements project.DataInterface.
-func (p *projectQuery) GetProjectById(id uint, idUser uint) (project.Core, error) {
+func (p *projectQuery) GetProjectById(id uint) (project.Core, error) {
 	var projectId Project
 	tx := p.db.First(&projectId, id)
 	if tx.Error != nil {
 		return project.Core{}, tx.Error
 	}
 
-	if projectId.UserID != idUser {
-		return project.Core{}, errors.New("id project tidak sesuai")
+	var getTask []data.Task
+	tx2 := p.db.Joins("JOIN projects ON projects.id = tasks.project_id").Where("projects.id = ?", projectId.ID).Find(&getTask)
+	if tx2.Error != nil {
+		return project.Core{}, tx2.Error
+	}
+
+	var resultGetTask []project.TaskListResponseCore
+	for _, v := range getTask {
+		resultGetTask = append(resultGetTask, project.TaskListResponseCore{
+			ID:              v.ID,
+			TaskName:        v.TaskName,
+			DescriptionTask: v.DescriptionTask,
+			StatusTask:      v.StatusTask,
+		})
 	}
 
 	projectIdCore := project.Core{
-		ID:          id,
-		UserID:      projectId.UserID,
 		ProjectName: projectId.ProjectName,
 		Description: projectId.Description,
+		TaskList:    resultGetTask,
 	}
 
 	return projectIdCore, nil
@@ -83,15 +95,11 @@ func (p *projectQuery) GetProjectById(id uint, idUser uint) (project.Core, error
 }
 
 // Update implements project.DataInterface.
-func (p *projectQuery) Update(id uint, idUser uint, input project.Core) error {
+func (p *projectQuery) Update(id uint, input project.Core) error {
 	var projectCurrent Project
 	tx := p.db.First(&projectCurrent, id)
 	if tx.Error != nil {
 		return tx.Error
-	}
-
-	if projectCurrent.UserID != idUser {
-		return errors.New("id project bukan milik anda")
 	}
 
 	tx2 := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)
@@ -119,4 +127,19 @@ func (p *projectQuery) Delete(id uint, idUser uint) error {
 		return tx2.Error
 	}
 	return nil
+}
+
+// GetUserByProjectId implements project.DataInterface.
+func (p *projectQuery) GetUserByProjectId(id uint) (project.Core, error) {
+	var projectUserId Project
+	tx := p.db.First(&projectUserId, id)
+	if tx.Error != nil {
+		return project.Core{}, tx.Error
+	}
+	projectIdCore := project.Core{
+		ID:     id,
+		UserID: projectUserId.UserID,
+	}
+
+	return projectIdCore, nil
 }

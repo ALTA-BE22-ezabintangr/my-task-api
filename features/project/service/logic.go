@@ -35,12 +35,22 @@ func (p *projectService) GetAll(id uint) ([]project.Core, error) {
 
 // GetProjectById implements project.ServiceInterface.
 func (p *projectService) GetProjectById(id uint, idUser uint) (input project.Core, err error) {
-	return p.projectData.GetProjectById(id, idUser)
+	result, err2 := p.projectData.GetUserByProjectId(id)
+	if err2 != nil {
+		return project.Core{}, err2
+	}
+	if result.UserID != idUser {
+		return project.Core{}, errors.New("id project tidak sesuai dengan milik anda")
+	}
+	return p.projectData.GetProjectById(id)
 }
 
 // Update implements project.ServiceInterface.
 func (p *projectService) Update(id uint, idUser uint, input project.Core) error {
-	return p.projectData.Update(id, idUser, input)
+	if input.UserID != idUser {
+		return errors.New("id project bukan milik anda")
+	}
+	return p.projectData.Update(id, input)
 }
 
 // Delete implements project.ServiceInterface.

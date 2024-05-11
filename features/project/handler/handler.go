@@ -98,6 +98,7 @@ func (h *ProjectHandler) GetProjectById(c echo.Context) error {
 		ID:          result.ID,
 		ProjectName: result.ProjectName,
 		Description: result.Description,
+		TaskList:    result.TaskList,
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{
