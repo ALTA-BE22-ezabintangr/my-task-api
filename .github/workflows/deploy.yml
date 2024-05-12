@@ -2,7 +2,7 @@ name: Deploy app to server
 
 on:
   push:
-    tags:
+    branches:
       - "main"
 
 jobs:
