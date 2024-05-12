@@ -45,8 +45,9 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.port }}
           script: |
-            docker stop apiContainer
-            docker rm apiContainer
-            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/be-images:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/be-images:latest
-                        docker run -p 80:8080 -e secrets.DBUSER=${{ secrets.DBUSER }} -e secrets.DBPASS=${{ secrets.DBPASS }} -e secrets.DBHOST=${{ secrets.DBHOST }} -e secrets.DBPORT=${{ secrets.DBPORT }} -e secrets.DBNAME=${{ secrets.DBNAME }} -e secrets.JWTSECRET=${{ secrets.JWTSECRET }} --name becontainer be-images:lates
+            docker run -p 80:8080 -e secrets.DBUSER=${{ secrets.DBUSER }} -e secrets.DBPASS=${{ secrets.DBPASS }} -e secrets.DBHOST=${{ secrets.DBHOST }} -e secrets.DBPORT=${{ secrets.DBPORT }} -e secrets.DBNAME=${{ secrets.DBNAME }} -e secrets.JWTSECRET=${{ secrets.JWTSECRET }} --name becontainer be-images:latest
+          
+        #   docker stop apiContainer
+        #   docker rm apiContainer
+        #   docker rmi {{ secrets.DOCKERHUB_USERNAME }}/be-images:latest
