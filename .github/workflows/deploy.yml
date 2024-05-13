@@ -49,5 +49,5 @@ jobs:
             docker rm apiContainer
             docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/be-images:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/be-images:latest
-            docker run -d -p 80:8080 -e secrets.DBUSER=${{ secrets.DBUSER }} -e secrets.DBPASS=${{ secrets.DBPASS }} -e secrets.DBHOST=${{ secrets.DBHOST }} -e secrets.DBPORT=${{ secrets.DBPORT }} -e secrets.DBNAME=${{ secrets.DBNAME }} -e secrets.JWTSECRET=${{ secrets.JWTSECRET }} --name apiContainer be-images:latest
+            docker run -d -p 80:8080 -e secrets.DBUSER=${{ secrets.DBUSER }} -e secrets.DBPASS=${{ secrets.DBPASS }} -e secrets.DBHOST=${{ secrets.DBHOST }} -e secrets.DBPORT=${{ secrets.DBPORT }} -e secrets.DBNAME=${{ secrets.DBNAME }} -e secrets.JWTSECRET=${{ secrets.JWTSECRET }} --name apiContainer ezabintangr/be-images:latest
           
