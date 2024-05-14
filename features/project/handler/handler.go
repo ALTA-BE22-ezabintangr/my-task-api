@@ -3,6 +3,7 @@ package handler
 import (
 	"myTaskApp/app/middlewares"
 	"myTaskApp/features/project"
+	"myTaskApp/utils/responses"
 	"net/http"
 	"strconv"
 
@@ -24,10 +25,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	newRequest := ProjectRequest{}
 	errBind := c.Bind(&newRequest)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error bind data: " + errBind.Error(),
-		})
+		return c.JSON(http.StatusBadRequest, responses.WebJSONResponse("error bind data: "+errBind.Error(), nil))
 	}
 
 	requestCore := project.Core{
@@ -38,26 +36,17 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 
 	errCreate := h.projectService.Create(requestCore)
 	if errCreate != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error create data " + errCreate.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error create project: "+errCreate.Error(), nil))
 	}
 
-	return c.JSON(http.StatusCreated, map[string]any{
-		"status":  "success",
-		"message": "success create project",
-	})
+	return c.JSON(http.StatusCreated, responses.WebJSONResponse("success create project", nil))
 }
 
 func (h *ProjectHandler) GetAllProject(c echo.Context) error {
 	idToken := middlewares.ExtractTokenUserId(c)
 	result, errGetAll := h.projectService.GetAll(uint(idToken))
 	if errGetAll != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error get all data " + errGetAll.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error get all data "+errGetAll.Error(), nil))
 	}
 
 	var allProjectResponse []ProjectResponse
@@ -68,30 +57,20 @@ func (h *ProjectHandler) GetAllProject(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "success get all project",
-		"project": allProjectResponse,
-	})
+	return c.JSON(http.StatusOK, responses.WebJSONResponse("success get all project", allProjectResponse))
 }
 
 func (h *ProjectHandler) GetProjectById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error convert id " + errConv.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
 	}
 
 	idToken := middlewares.ExtractTokenUserId(c)
 	result, err := h.projectService.GetProjectById(uint(idConv), uint(idToken))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error get data " + err.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error get project "+err.Error(), nil))
 	}
 
 	responseResult := ProjectResponseById{
@@ -100,31 +79,20 @@ func (h *ProjectHandler) GetProjectById(c echo.Context) error {
 		Description: result.Description,
 		TaskList:    result.TaskList,
 	}
-
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "success get project",
-		"project": responseResult,
-	})
+	return c.JSON(http.StatusOK, responses.WebJSONResponse("success get project", responseResult))
 }
 
 func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 	id := c.Param("id")
 	idInt, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error convert id " + errConv.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
 	}
 
 	updateRequest := UpdateRequest{}
 	errBind := c.Bind(&updateRequest)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error bind data " + errBind.Error(),
-		})
+		return c.JSON(http.StatusBadRequest, responses.WebJSONResponse("error bind data: "+errBind.Error(), nil))
 	}
 	updateCore := project.Core{
 		ProjectName: updateRequest.ProjectName,
@@ -134,39 +102,24 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 	idToken := middlewares.ExtractTokenUserId(c)
 	err := h.projectService.Update(uint(idInt), uint(idToken), updateCore)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error update data" + err.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error update project "+err.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "succes update project",
-	})
+	return c.JSON(http.StatusOK, responses.WebJSONResponse("success update project", nil))
 }
 
 func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error convert id " + errConv.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
 	}
 
 	idToken := middlewares.ExtractTokenUserId(c)
 	tx := h.projectService.Delete(uint(idConv), uint(idToken))
 	if tx != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error delete data " + tx.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error delete project "+tx.Error(), nil))
 	}
 
-	return c.JSON(http.StatusCreated, map[string]any{
-		"status":  "success",
-		"message": "success delete project",
-	})
+	return c.JSON(http.StatusOK, responses.WebJSONResponse("success delete project", nil))
 }

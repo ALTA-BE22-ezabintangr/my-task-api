@@ -1,7 +1,6 @@
 package data
 
 import (
-	"errors"
 	"myTaskApp/features/project"
 	"myTaskApp/features/task/data"
 
@@ -96,33 +95,16 @@ func (p *projectQuery) GetProjectById(id uint) (project.Core, error) {
 
 // Update implements project.DataInterface.
 func (p *projectQuery) Update(id uint, input project.Core) error {
-	var projectCurrent Project
-	tx := p.db.First(&projectCurrent, id)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
 	tx2 := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)
 	if tx2.Error != nil {
 		return tx2.Error
 	}
-
 	return nil
 }
 
 // Delete implements project.DataInterface.
-func (p *projectQuery) Delete(id uint, idUser uint) error {
-	var projectDelete Project
-	tx := p.db.First(&projectDelete, id)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	if projectDelete.UserID != idUser {
-		return errors.New("id project bukan milik anda")
-	}
-
-	tx2 := p.db.Delete(&projectDelete)
+func (p *projectQuery) Delete(id uint) error {
+	tx2 := p.db.Delete(&Project{}, id)
 	if tx2.Error != nil {
 		return tx2.Error
 	}

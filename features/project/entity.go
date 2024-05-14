@@ -23,7 +23,7 @@ type DataInterface interface {
 	Insert(input Core) error
 	SelectAll(id uint) ([]Core, error)
 	GetProjectById(id uint) (Core, error)
-	Delete(id uint, idUser uint) error
+	Delete(id uint) error
 	Update(id uint, input Core) error
 	GetUserByProjectId(id uint) (Core, error)
 }
