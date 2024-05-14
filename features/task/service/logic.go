@@ -20,12 +20,21 @@ func New(td task.DataInterface, pd project.DataInterface) task.ServiceInterface 
 
 // Create implements task.ServiceInterface.
 func (t *taskService) Create(input task.Core) error {
+	result, err := t.projectData.GetUserByProjectId(input.ProjectID)
+	if err != nil {
+		return err
+	}
+	if result.UserID != input.UserID {
+		return errors.New("id project bukan milik anda")
+	}
+
 	if input.ProjectID == 0 || input.TaskName == "" {
 		return errors.New("id project/nama task tidak boleh kosong")
 	}
-	err := t.taskData.Insert(input)
-	if err != nil {
-		return err
+
+	err2 := t.taskData.Insert(input)
+	if err2 != nil {
+		return err2
 	}
 	return nil
 }
@@ -36,7 +45,7 @@ func (t *taskService) Delete(id uint, idUser uint) error {
 	if err != nil {
 		return err
 	}
-	result2, err2 := t.projectData.GetProjectById(result.ProjectID)
+	result2, err2 := t.projectData.GetUserByProjectId(result.ProjectID)
 	if err2 != nil {
 		return err2
 	}
@@ -48,11 +57,15 @@ func (t *taskService) Delete(id uint, idUser uint) error {
 
 // Update implements task.ServiceInterface.
 func (t *taskService) Update(id uint, idUser uint, input task.Core) error {
-	result, err := t.projectData.GetProjectById(input.ProjectID)
+	result, err := t.taskData.GetTaskById(id)
 	if err != nil {
 		return err
 	}
-	if result.UserID != idUser {
+	result2, err2 := t.projectData.GetUserByProjectId(result.ProjectID)
+	if err2 != nil {
+		return err2
+	}
+	if result2.UserID != idUser {
 		return errors.New("id task bukan milik anda")
 	}
 

@@ -3,6 +3,7 @@ package handler
 import (
 	"myTaskApp/app/middlewares"
 	"myTaskApp/features/task"
+	"myTaskApp/utils/responses"
 	"net/http"
 	"strconv"
 
@@ -23,10 +24,7 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 	newTask := TaskRequest{}
 	errBind := c.Bind(&newTask)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error bind data" + errBind.Error(),
-		})
+		return c.JSON(http.StatusBadRequest, responses.WebJSONResponse("error bind data: "+errBind.Error(), nil))
 	}
 	idToken := middlewares.ExtractTokenUserId(c)
 	newTaskCore := task.Core{
@@ -39,35 +37,23 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 
 	errCreate := h.HandlerService.Create(newTaskCore)
 	if errCreate != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error create task" + errCreate.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error create task: "+errCreate.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "success create task",
-	})
+	return c.JSON(http.StatusCreated, responses.WebJSONResponse("success create task", nil))
 }
 
 func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error convert id " + errConv.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
 	}
 
 	updateRequest := TaskUpdateRequest{}
 	errBind := c.Bind(&updateRequest)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error bind data " + errBind.Error(),
-		})
+		return c.JSON(http.StatusBadRequest, responses.WebJSONResponse("error bind data: "+errBind.Error(), nil))
 	}
 
 	updateCore := task.Core{
@@ -79,39 +65,24 @@ func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 	idToken := middlewares.ExtractTokenUserId(c)
 	err := h.HandlerService.Update(uint(idConv), uint(idToken), updateCore)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error update data" + err.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error update task: "+err.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "success update task by id",
-	})
+	return c.JSON(http.StatusOK, responses.WebJSONResponse("success update task by id", nil))
 }
 
 func (h *TaskHandler) DeleteTaskById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{
-			"status":  "failed",
-			"message": "error convert id " + errConv.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
 	}
 
 	idToken := middlewares.ExtractTokenUserId(c)
 	err := h.HandlerService.Delete(uint(idConv), uint(idToken))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"status":  "failed",
-			"message": "error delete data" + err.Error(),
-		})
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error update task: "+err.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{
-		"status":  "success",
-		"message": "success delete task by id",
-	})
+	return c.JSON(http.StatusOK, responses.WebJSONResponse("success delete task", nil))
 }

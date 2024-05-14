@@ -69,7 +69,7 @@ func (u *userService) Update(id uint, input user.Core) error {
 
 // Login implements user.ServiceInterface.
 func (u *userService) Login(email string, password string) (data *user.Core, token string, err error) {
-	data, err = u.userData.Login(email, password)
+	data, err = u.userData.Login(email)
 	if err != nil {
 		return nil, "", err
 	}

@@ -3,28 +3,39 @@ package service
 import (
 	"errors"
 	"myTaskApp/features/project"
+	"myTaskApp/features/user"
 )
 
 type projectService struct {
 	projectData project.DataInterface
+	userData    user.DataInterface
 }
 
-func New(pd project.DataInterface) project.ServiceInterface {
+func New(pd project.DataInterface, ud user.DataInterface) project.ServiceInterface {
 	return &projectService{
 		projectData: pd,
+		userData:    ud,
 	}
 }
 
 // Create implements project.ServiceInterface.
 func (p *projectService) Create(input project.Core) error {
-	if input.ProjectName == "" {
-		return errors.New("nama project/userID tidak boleh kosong")
-	}
-	err := p.projectData.Insert(input)
+	result, err := p.userData.SelectProfileById(input.UserID)
 	if err != nil {
 		return err
 	}
 
+	if result.ID != input.UserID {
+		return errors.New("user not found")
+	}
+	if input.ProjectName == "" {
+		return errors.New("nama project tidak boleh kosong")
+	}
+
+	err2 := p.projectData.Insert(input)
+	if err2 != nil {
+		return err2
+	}
 	return nil
 }
 
@@ -47,7 +58,11 @@ func (p *projectService) GetProjectById(id uint, idUser uint) (input project.Cor
 
 // Update implements project.ServiceInterface.
 func (p *projectService) Update(id uint, idUser uint, input project.Core) error {
-	if input.UserID != idUser {
+	result, err2 := p.projectData.GetUserByProjectId(id)
+	if err2 != nil {
+		return err2
+	}
+	if result.UserID != idUser {
 		return errors.New("id project bukan milik anda")
 	}
 	return p.projectData.Update(id, input)
@@ -55,5 +70,12 @@ func (p *projectService) Update(id uint, idUser uint, input project.Core) error 
 
 // Delete implements project.ServiceInterface.
 func (p *projectService) Delete(id uint, idUser uint) error {
-	return p.projectData.Delete(id, idUser)
+	result, err := p.projectData.GetUserByProjectId(id)
+	if err != nil {
+		return err
+	}
+	if result.UserID != idUser {
+		return errors.New("id project bukan milik anda")
+	}
+	return p.projectData.Delete(id)
 }

@@ -69,7 +69,6 @@ func (u *userQuery) Delete(id uint) error {
 
 // Update implements user.DataInterface.
 func (u *userQuery) Update(id uint, input user.Core) error {
-
 	tx := u.db.Model(&User{}).Where("id=?", id).Updates(input)
 	if tx.Error != nil {
 		return tx.Error
@@ -79,7 +78,7 @@ func (u *userQuery) Update(id uint, input user.Core) error {
 }
 
 // Login implements user.DataInterface.
-func (u *userQuery) Login(email string, password string) (*user.Core, error) {
+func (u *userQuery) Login(email string) (*user.Core, error) {
 	var userData User
 	tx := u.db.Where("email = ?", email).First(&userData)
 	if tx.Error != nil {
