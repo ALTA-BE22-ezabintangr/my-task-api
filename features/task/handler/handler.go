@@ -47,7 +47,7 @@ func (h *TaskHandler) UpdateTaskById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id: "+errConv.Error(), nil))
 	}
 
 	updateRequest := TaskUpdateRequest{}
@@ -75,13 +75,13 @@ func (h *TaskHandler) DeleteTaskById(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id: "+errConv.Error(), nil))
 	}
 
 	idToken := middlewares.ExtractTokenUserId(c)
 	err := h.HandlerService.Delete(uint(idConv), uint(idToken))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error update task: "+err.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error delete task: "+err.Error(), nil))
 	}
 
 	return c.JSON(http.StatusOK, responses.WebJSONResponse("success delete task", nil))

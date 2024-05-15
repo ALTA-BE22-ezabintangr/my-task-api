@@ -22,7 +22,7 @@ func New(ud user.DataInterface, hash encrypts.HashInterface) user.ServiceInterfa
 // Create implements user.ServiceInterface.
 func (u *userService) Create(input user.Core) error {
 	if input.Name == "" || input.Email == "" || input.Password == "" {
-		return errors.New("nama/email/password tidak boleh kosong")
+		return errors.New("[validation] nama/email/password tidak boleh kosong")
 	}
 
 	result, errHash := u.hashService.HashPassword(input.Password)

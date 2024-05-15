@@ -2,7 +2,7 @@ package responses
 
 type MapResponse struct {
 	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func WebJSONResponse(msg string, data interface{}) MapResponse {

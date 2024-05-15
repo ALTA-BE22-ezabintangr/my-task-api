@@ -5,6 +5,7 @@ import (
 	"myTaskApp/features/user"
 	"myTaskApp/utils/responses"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,6 +36,9 @@ func (uh *UserHandler) Register(c echo.Context) error {
 	}
 	errInsert := uh.userService.Create(inputCore)
 	if errInsert != nil {
+		if strings.Contains(errInsert.Error(), "validation") {
+			return c.JSON(http.StatusBadRequest, responses.WebJSONResponse("error insert data: "+errInsert.Error(), nil))
+		}
 		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error insert data: "+errInsert.Error(), nil))
 	}
 

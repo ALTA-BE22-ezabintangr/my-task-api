@@ -95,7 +95,11 @@ func (p *projectQuery) GetProjectById(id uint) (project.Core, error) {
 
 // Update implements project.DataInterface.
 func (p *projectQuery) Update(id uint, input project.Core) error {
-	tx2 := p.db.Model(&Project{}).Where("id = ?", id).Updates(input)
+	updateList := Project{
+		ProjectName: input.ProjectName,
+		Description: input.Description,
+	}
+	tx2 := p.db.Model(&Project{}).Where("id = ?", id).Updates(updateList)
 	if tx2.Error != nil {
 		return tx2.Error
 	}

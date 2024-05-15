@@ -74,7 +74,7 @@ func (h *ProjectHandler) GetProjectById(c echo.Context) error {
 	}
 
 	responseResult := ProjectResponseById{
-		ID:          result.ID,
+		ID:          uint(idConv),
 		ProjectName: result.ProjectName,
 		Description: result.Description,
 		TaskList:    result.TaskList,
@@ -86,7 +86,7 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 	id := c.Param("id")
 	idInt, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id: "+errConv.Error(), nil))
 	}
 
 	updateRequest := UpdateRequest{}
@@ -102,7 +102,7 @@ func (h *ProjectHandler) UpdateProject(c echo.Context) error {
 	idToken := middlewares.ExtractTokenUserId(c)
 	err := h.projectService.Update(uint(idInt), uint(idToken), updateCore)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error update project "+err.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error update project: "+err.Error(), nil))
 	}
 
 	return c.JSON(http.StatusOK, responses.WebJSONResponse("success update project", nil))
@@ -112,13 +112,13 @@ func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id:"+errConv.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error convert id: "+errConv.Error(), nil))
 	}
 
 	idToken := middlewares.ExtractTokenUserId(c)
 	tx := h.projectService.Delete(uint(idConv), uint(idToken))
 	if tx != nil {
-		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error delete project "+tx.Error(), nil))
+		return c.JSON(http.StatusInternalServerError, responses.WebJSONResponse("error delete project: "+tx.Error(), nil))
 	}
 
 	return c.JSON(http.StatusOK, responses.WebJSONResponse("success delete project", nil))
