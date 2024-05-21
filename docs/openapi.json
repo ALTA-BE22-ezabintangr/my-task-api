@@ -1,0 +1,383 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "myTaskApp API",
+        "version": "1.0.0",
+        "description": "documentation for my task app API",
+        "termsOfService": "https://mytaskapp.id",
+        "contact": {
+            "name": "Eza Bintang Ramadhan",
+            "email": "ezabintangramadhan@gmail.com"
+        },
+        "license": {
+            "name": "APACHE 2.0"
+        }
+    },
+    "externalDocs": {
+        "url": "https://mytaskapp.id",
+        "description": "Full documentation about myTaskApp"
+    },
+    "servers": [
+        {
+            "description": "SwaggerHub API Auto Mocking",
+            "url": "https://virtserver.swaggerhub.com/ezabintangramadhan/myTaskApp-api/1.0.0"
+        },
+        {
+            "description": "myTaskApp API server",
+            "url": "https://{environment}.api.mytaskapp.id",
+            "variables": {
+                "environment": {
+                    "default": "dev",
+                    "enum": [
+                        "dev",
+                        "qa",
+                        "prod"
+                    ]
+                }
+            }
+        }
+    ],
+    "paths": {
+        "/register":{
+            "post":{
+                "tags": ["Auth"],
+                "summary": "register for new user",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "login user",
+                "description": "",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "description": "Username user",
+                                        "example": "user123"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "description": "passwword user",
+                                        "example": "passwword123"
+                                    }
+                                },
+                                "required": [
+                                    "username",
+                                    "passwword"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Login"
+                                },
+                                "examples": {
+                                    "success": {
+                                        "description": "Login successful",
+                                        "value":{
+                                            "id": 1,
+                                            "name":"user123",
+                                            "token":"agaTwefhwoefh12314"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400":{
+                        "description": "Login failed",
+                        "content": {
+                            "application/json":{
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "description":{
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "failed": {
+                                        "description": "Login failed",
+                                        "value":{
+                                            "status":"login failed",
+                                            "description":"wrong username/password"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                {
+                    "JWTAuth":[]
+                }
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "see profile user",
+                "description": "see profile user by token id",
+                "parameters": [
+                    {                        
+                        "name": "id user",
+                        "in": "path",
+                        "required": true,
+                        "description": "user id for profile",
+                            "schema": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 10
+                            },
+                            "examples": {
+                                "user_id":{
+                                    "description": "input user id from extracted token",
+                                    "value": 1
+                                }
+                            }
+                        
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success get profile user",
+                        "content": {
+                            "application/json":{
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name":{
+                                            "type": "string",
+                                            "example": "eza"
+                                        },
+                                        "email":{
+                                            "type": "string",
+                                            "example":"eza@mail.com"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "user not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "failed": {
+                                        "description": "Failed find user id",
+                                        "value": {
+                                            "success": false
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Todolist"
+                ],
+                "summary": "Update existing todo list",
+                "description": "Delete existing todo list by id",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/TodolistId"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateOrUpdateTodolist"
+                            },
+                            "examples": {
+                                "java": {
+                                    "description": "Example create todolist Java",
+                                    "value": {
+                                        "name": "Java",
+                                        "priority": 3,
+                                        "tags": [
+                                            "Java",
+                                            "Programming"
+                                        ]
+                                    }
+                                },
+                                "php": {
+                                    "description": "Example create todolist php",
+                                    "value": {
+                                        "name": "php",
+                                        "priority": 3,
+                                        "tags": [
+                                            "php",
+                                            "Programming"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success update todo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArrayTodolist"
+                                },
+                                "examples": {
+                                    "java": {
+                                        "description": "Success create todolist Java",
+                                        "value": {
+                                            "name": "Java",
+                                            "priority": 3,
+                                            "tags": [
+                                                "Java",
+                                                "Programming"
+                                            ]
+                                        }
+                                    },
+                                    "php": {
+                                        "description": "Success create todolist php",
+                                        "value": {
+                                            "name": "php",
+                                            "priority": 3,
+                                            "tags": [
+                                                "php",
+                                                "Programming"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "JWTAuth": {
+                "description": "token for admin",
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            },
+            "TodolistAuth": {
+                "description": "Authentication for Todolist RESTful API",
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key"
+            }
+        },
+        "parameters": {
+            "TodolistId": {
+                "name": "todolistId",
+                "in": "path",
+                "required": true,
+                "description": "Todolist id for update",
+                "schema": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 10
+                },
+                "examples": {
+                    "java": {
+                        "description": "sample todo list id for java",
+                        "value": 1
+                    },
+                    "php": {
+                        "description": "sample todo list id for php",
+                        "value": 2
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "Login": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "token": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ArrayTodolist": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Login"
+                }
+            },
+            "CreateOrUpdateTodolist": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "priority": {
+                        "type": "number",
+                        "format": "int32"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
